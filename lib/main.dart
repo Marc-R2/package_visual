@@ -39,10 +39,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Timer? updateTimer;
 
+  late final ScrollController scrollController;
+
   @override
   void initState() {
     setTimer();
+    scrollController = ScrollController();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    updateTimer?.cancel();
+    super.dispose();
   }
 
   void setTimer() {
@@ -58,6 +67,8 @@ class _MyHomePageState extends State<MyHomePage> {
   int get sendPos => Settings.currentSendFrame;
 
   void update([Timer? t]) {
+    if (mounted) setState(() {});
+
     final size = Settings.windowSize;
 
     for (var i = 0; i < size; i++) {
@@ -67,9 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Settings.packages[index] = Package.fromSettings(index: index);
         break;
       }
-      if (i == 0 &&
-          DateTime.now().isAfter(frame.receiveTime) &&
-          !frame.isDestroyed) {
+      if (DateTime.now().isAfter(frame.receiveTime) && !frame.isDestroyed) {
         Settings.packages[index] = frame.copyWith(isReceived: true);
         Settings.currentReceiveFrame = index + 1;
       }
@@ -156,17 +165,20 @@ class _MyHomePageState extends State<MyHomePage> {
               // Reset
               OpenMenuItem(
                 leading: const Icon(Icons.refresh),
-                editable: InkWell(
-                  onTap: () {
-                    Settings.reset();
-                    setState(() {});
-                  },
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Reset',
-                      style: const TextStyle(fontSize: 16),
-                    ),
+                onTap: () async {
+                  await scrollController.animateTo(
+                    0,
+                    duration: const Duration(milliseconds: 512),
+                    curve: Curves.easeInOutCirc,
+                  );
+                  Settings.reset();
+                  if (mounted) setState(() {});
+                },
+                editable: const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Reset',
+                    style: TextStyle(fontSize: 16),
                   ),
                 ),
               ),
@@ -181,6 +193,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 child: PackageFrameView(
                   items: Settings.packages,
+                  scrollController: scrollController,
                 ),
               ),
             ),
