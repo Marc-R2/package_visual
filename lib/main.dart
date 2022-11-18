@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:package_visual/package_frame_view.dart';
+import 'package:package_visual/util/scroll_behavior.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,15 +19,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -38,9 +38,11 @@ class _MyHomePageState extends State<MyHomePage> {
   static int currentReceiveFrame = 6;
   static int frameSize = 5;
 
-  void _incrementCounter() {
+  bool showSettings = false;
+
+  void toggleSettings() {
     setState(() {
-      _counter++;
+      showSettings = !showSettings;
     });
   }
 
@@ -48,121 +50,54 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: const Text('Selective Repeat / Go Back N'),
       ),
-      body: LayoutBuilder(builder: (context, cons) {
-        return ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: max(currentSendFrame, currentReceiveFrame) + 32,
-          itemBuilder: (context, index) {
-            final height = cons.maxHeight / 12;
-            final width = height / 2;
-            final isFirstInSendFrame = index == currentSendFrame;
-            final isLastInSendFrame = index == currentSendFrame + frameSize - 1;
-            final isFirstInReceiveFrame = index == currentReceiveFrame;
-            final isLastInReceiveFrame = index == currentReceiveFrame + frameSize - 1;
-            final isBeforeSendFrame = index + 1 > currentSendFrame;
-            final isBeforeReceiveFrame = index + 1 > currentReceiveFrame;
-            return Stack(
-              children: [
-                // Gray background for the frame of the current send
-                // On the top row
-                if (index > currentSendFrame - 1 &&
-                    index < currentSendFrame + frameSize)
-                  Container(
-                    height: height + 8,
-                    width: width + (isFirstInSendFrame || isLastInSendFrame ? 12 : 16),
-                    margin: EdgeInsets.only(
-                      top: 4,
-                      left: isFirstInSendFrame ? 4 : 0,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 0, color: Colors.grey),
-                      color: Colors.grey,
+      body: Row(
+        children: [
+          Row(
+            children: [
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: IconButton(
+                      onPressed: toggleSettings,
+                      icon: const Icon(Icons.settings),
                     ),
                   ),
-                // Gray background for the frame of the current receive
-                // On the bottom row
-                if (index > currentReceiveFrame - 1 &&
-                    index < currentReceiveFrame + frameSize)
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      height: height + 8,
-                      width: width + (isFirstInReceiveFrame || isLastInReceiveFrame ? 12 : 16),
-                      margin: EdgeInsets.only(
-                        bottom: 4,
-                        left: isFirstInReceiveFrame ? 4 : 0,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 0, color: Colors.grey),
-                        color: Colors.grey,
-                      ),
+                ],
+              ),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 128),
+                curve: Curves.easeInOut,
+                width: showSettings ? 256 : 0,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text('Settings'),
                     ),
-                  ),
-                Container(
-                  width: width,
-                  height: cons.maxHeight,
-                  margin: const EdgeInsets.all(8.0),
-                  color: Colors.grey.withOpacity(0.25),
+                  ],
                 ),
-                // Animated Rectangle Package between Sender and Receiver
-                AnimatedPositioned(
-                  duration: const Duration(milliseconds: 500),
-                  top: _counter * height,
-                  child: Container(
-                    width: width,
-                    height: height,
-                    margin: const EdgeInsets.all(8.0),
-                    color: Colors.blue,
-                  ),
+              ),
+            ],
+          ),
+          Expanded(
+            child: Card(
+              margin: const EdgeInsets.only(top: 16, right: 16, bottom: 16),
+              elevation: 48,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: PackageFrameView(
+                  currentSendFrame: currentSendFrame,
+                  currentReceiveFrame: currentReceiveFrame,
+                  frameSize: frameSize,
+                  counter: _counter,
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: width,
-                        height: height,
-                        // Sending Rectangle on top
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 1),
-                            color: isBeforeSendFrame
-                                ? Colors.blue
-                                : Colors.yellow,
-                          ),
-                          child: Center(child: Text('$index')),
-                        ),
-                      ),
-                      const Spacer(),
-                      // Receiving Rectangle on bottom
-                      SizedBox(
-                        width: width,
-                        height: height,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 1),
-                            color: isBeforeReceiveFrame
-                                ? Colors.white
-                                // A Dark Blue Rectangle
-                                : Colors.deepPurple.shade900,
-                          ),
-                          child: Center(child: Text('$index')),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
