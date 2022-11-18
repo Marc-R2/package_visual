@@ -1,8 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:package_visual/openMenu/open_menu_item.dart';
+import 'package:package_visual/openMenu/open_menu_widget.dart';
 import 'package:package_visual/package_frame_view.dart';
-import 'package:package_visual/util/scroll_behavior.dart';
 
 void main() {
   runApp(const MyApp());
@@ -54,33 +53,19 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Row(
         children: [
-          Row(
-            children: [
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: IconButton(
-                      onPressed: toggleSettings,
-                      icon: const Icon(Icons.settings),
-                    ),
+          OpenMenu(
+            items: const [
+              OpenMenuItem(
+                leading: Icon(Icons.settings),
+                editable: Center(
+                  child: Text(
+                    'Settings',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
-                ],
-              ),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 128),
-                curve: Curves.easeInOut,
-                width: showSettings ? 256 : 0,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text('Settings'),
-                    ),
-                  ],
                 ),
               ),
             ],
+            showMenu: showSettings,
           ),
           Expanded(
             child: Card(
