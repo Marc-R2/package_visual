@@ -1,0 +1,22 @@
+import 'package:package_visual/settings/protocol.dart';
+
+/// The settings used for the creation of new [Package]s.
+class Settings {
+  /// Whether packages start their animation.
+  static bool doSendPackages = true;
+
+  /// The [Protocol] used for transmission.
+  static Protocol protocol = Protocol.goBackN;
+
+  /// Time in milliseconds to travel from sender to receiver (and bacl).
+  static int transmissionTime = 4096;
+
+  /// The number of packages that are contained in a Frame.
+  static int windowSize = 4;
+
+  /// Time in milliseconds before a package times out.
+  static int timeout = 8192;
+
+  /// Time in milliseconds between sending packages.
+  static int sendInterval = 1024;
+}
