@@ -16,6 +16,6 @@ jobs:
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
           targetBranch: page-preview
-          baseHref: /schwupp_deco_widget/
+          baseHref: /package_visual/
 
 

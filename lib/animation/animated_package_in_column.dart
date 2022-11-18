@@ -49,6 +49,11 @@ class _AnimatedPackageInColumnState extends State<AnimatedPackageInColumn> {
       Settings.packages[index] = widget.package.copyWith(isConfirmed: true);
       isDone = true;
     }
+    if (DateTime.now().isAfter(widget.package.receiveTime) &&
+        !widget.package.isDestroyed &&
+        !widget.package.isReceived) {
+      Settings.packages[index] = widget.package.copyWith(isReceived: true);
+    }
     if (mounted) setState(() {});
   }
 
@@ -73,7 +78,7 @@ class _AnimatedPackageInColumnState extends State<AnimatedPackageInColumn> {
         height: widget.height,
         decoration: BoxDecoration(
           border: Border.all(),
-          color: widget.package.isReceived ? Colors.orange : Colors.red,
+          color: widget.package.isReceived ? Colors.green : Colors.blue,
         ),
       ),
     );

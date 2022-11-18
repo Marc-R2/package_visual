@@ -16,6 +16,6 @@ jobs:
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
           targetBranch: page-public
-          baseHref: /portfolio/
+          baseHref: /package_visual/
 
 

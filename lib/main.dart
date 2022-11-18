@@ -68,6 +68,10 @@ class _MyHomePageState extends State<MyHomePage> {
         Settings.packages[index] = Package.fromSettings(index: index);
         break;
       }
+      if (i == 0 && DateTime.now().isAfter(frame.receiveTime) && !frame.isDestroyed) {
+        Settings.packages[index] = frame.copyWith(isReceived: true);
+        Settings.currentReceiveFrame = index + 1;
+      }
       if (i == 0 && frame.isConfirmed) {
         i = -1;
         Settings.currentSendFrame++;
