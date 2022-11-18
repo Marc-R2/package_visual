@@ -16,13 +16,13 @@ class Settings {
   static int windowSize = 4;
 
   /// Time in milliseconds before a package times out.
-  static int timeout = 8192;
+  static int timeout = 5192;
 
   /// Time in milliseconds between sending packages.
   static int sendInterval = 1024;
 
   /// The currently active [Package]s.
-  static final Map<int, Package> packages = {};
+  static final List<Package> packages = [];
 
   /// The index of the first not yet confirmed package.
   static int currentSendFrame = 0;

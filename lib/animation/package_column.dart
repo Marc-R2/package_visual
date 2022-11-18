@@ -28,7 +28,7 @@ class PackageColumn extends StatelessWidget {
   final double maxHeight;
 
   /// The Package to display
-  final Package? package;
+  final List<Package> package;
 
   int get _currentSendFrame => Settings.currentSendFrame;
 
@@ -41,10 +41,14 @@ class PackageColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isReceived =
-        _isReceived(package?.receiveTime) ?? index < _currentReceiveFrame;
-    final isConfirmed =
-        _isReceived(package?.confirmationTime) ?? index < _currentSendFrame;
+    final isReceived = package.isEmpty
+        ? index < _currentReceiveFrame
+        : package.any((item) => item.isReceived) ||
+            index < _currentReceiveFrame;
+
+    final isConfirmed = package.isEmpty
+        ? index < _currentSendFrame
+        : package.any((item) => item.isConfirmed) || index < _currentSendFrame;
 
     final column = Padding(
       padding: const EdgeInsets.all(8),
@@ -88,20 +92,22 @@ class PackageColumn extends StatelessWidget {
       ),
     );
 
-    if (package == null) return column;
+    if (package.isEmpty) return column;
     return Stack(
       children: [
-        AnimatedPackageInColumn(
-          height: height,
-          maxHeight: maxHeight,
-          width: width,
-          package: package!,
-        ),
+        for (final item in package)
+          AnimatedPackageInColumn(
+            key: ValueKey(item),
+            package: item,
+            width: width,
+            height: height,
+            maxHeight: maxHeight,
+          ),
         column,
         AnimatedTimeout(
           height: height,
           width: width,
-          package: package!,
+          package: package.last,
         ),
       ],
     );

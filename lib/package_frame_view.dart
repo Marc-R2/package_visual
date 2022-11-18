@@ -15,7 +15,7 @@ class PackageFrameView extends StatefulWidget {
     required this.scrollController,
   });
 
-  final Map<int, Package> items;
+  final List<Package> items;
 
   final ScrollController scrollController;
 
@@ -39,6 +39,9 @@ class _PackageFrameViewState extends State<PackageFrameView> {
   void update() {
     if (mounted) setState(() => _xScroll = widget.scrollController.offset);
   }
+
+  List<Package> getItems(int index) =>
+      widget.items.where((item) => item.index == index).toList();
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +91,7 @@ class _PackageFrameViewState extends State<PackageFrameView> {
                   height: height,
                   width: width,
                   maxHeight: cons.maxHeight,
-                  package: widget.items[index],
+                  package: getItems(index),
                 ),
               ),
             ),

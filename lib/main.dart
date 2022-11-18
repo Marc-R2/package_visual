@@ -73,25 +73,51 @@ class _MyHomePageState extends State<MyHomePage> {
 
     for (var i = 0; i < size; i++) {
       final index = sendPos + i;
-      final frame = Settings.packages[index];
-      if (frame == null) {
-        Settings.packages[index] = Package.fromSettings(index: index);
+      final frames = Settings.packages.where((item) => item.index == index);
+
+      if (frames.isEmpty) {
+        Settings.packages.add(Package.fromSettings(index: index));
         break;
       }
-      if (DateTime.now().isAfter(frame.receiveTime) && !frame.isDestroyed) {
-        Settings.packages[index] = frame.copyWith(isReceived: true);
+
+      if (!frames.any((element) => !element.isTimedOut)) {
+        Settings.packages.add(Package.fromSettings(index: index));
+        break;
+      }
+
+      if (i == 0) {
+        if (frames.any((item) => !item.isDestroyed && item.isReceived)) {
+          Settings.currentReceiveFrame = index + 1;
+        }
+        final finished = frames.where(
+          (item) => item.isConfirmed && !item.isDestroyed,
+        );
+        if (finished.isNotEmpty) {
+          Settings.currentSendFrame = index + 1;
+          finished.map(Settings.packages.remove);
+          i = -1;
+          continue;
+        }
+      }
+
+      Settings.packages.removeWhere(
+        (element) => DateTime.now().isAfter(element.confirmationTime),
+      );
+
+      /*if (DateTime.now().isAfter(frame.receiveTime) && !frame.isDestroyed) {
+        Settings.packages.add(frame.copyWith(isReceived: true));
         Settings.currentReceiveFrame = index + 1;
       }
       if (i == 0 && frame.isConfirmed) {
         i = -1;
         Settings.currentSendFrame++;
-        Settings.packages.remove(index);
+        Settings.packages.removeAt(index);
         continue;
       }
       if (frame.isTimedOut && !frame.isConfirmed) {
         Settings.packages[index] = Package.fromSettings(index: index);
         break;
-      }
+      }*/
     }
 
     if (mounted) setState(() {});

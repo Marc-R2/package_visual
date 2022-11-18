@@ -46,13 +46,15 @@ class _AnimatedPackageInColumnState extends State<AnimatedPackageInColumn> {
   void _update([Timer? t]) {
     if (widget.package.isDone && !widget.package.isDestroyed) {
       _timer?.cancel();
-      Settings.packages[index] = widget.package.copyWith(isConfirmed: true);
+      Settings.packages.remove(widget.package);
+      Settings.packages.insert(0, widget.package.copyWith(isConfirmed: true));
       isDone = true;
     }
     if (DateTime.now().isAfter(widget.package.receiveTime) &&
         !widget.package.isDestroyed &&
         !widget.package.isReceived) {
-      Settings.packages[index] = widget.package.copyWith(isReceived: true);
+      Settings.packages.remove(widget.package);
+      Settings.packages.insert(0, widget.package.copyWith(isReceived: true));
     }
     if (mounted) setState(() {});
   }
