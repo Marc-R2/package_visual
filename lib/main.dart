@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:package_visual/animation/package.dart';
 import 'package:package_visual/openMenu/open_menu_item.dart';
 import 'package:package_visual/openMenu/open_menu_widget.dart';
 import 'package:package_visual/package_frame_view.dart';
+import 'package:package_visual/settings/settings_controller.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,18 +35,53 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  static int currentSendFrame = 4;
-  static int currentReceiveFrame = 6;
-  static int frameSize = 5;
-
   bool showSettings = false;
 
-  void toggleSettings() {
-    setState(() {
-      showSettings = !showSettings;
-    });
+  Timer? updateTimer;
+
+  @override
+  void initState() {
+    setTimer();
+    super.initState();
+  }
+
+  void setTimer() {
+    updateTimer?.cancel();
+    updateTimer = Timer.periodic(
+      Duration(milliseconds: Settings.sendInterval),
+      update,
+    );
+  }
+
+  void toggleSettings() => setState(() => showSettings = !showSettings);
+
+  int get sendPos => Settings.currentSendFrame;
+
+  void update([Timer? t]) {
+    print('update ${Settings.packages.keys}');
+    final size = Settings.windowSize;
+
+    for (var i = 0; i < size; i++) {
+      final index = sendPos + i;
+      final frame = Settings.packages[index];
+      if (frame == null) {
+        Settings.packages[index] = Package.fromSettings(index: index);
+        break;
+      }
+      if (i == 0 && frame.isConfirmed) {
+        i = -1;
+        Settings.currentSendFrame++;
+        Settings.packages.remove(index);
+        continue;
+      }
+      if (frame.isTimedOut && !frame.isConfirmed) {
+        Settings.packages[index] = Package.fromSettings(index: index);
+        break;
+      }
+    }
+
+    print('set state: $mounted');
+    if (mounted) setState(() {});
   }
 
   @override
@@ -69,15 +108,12 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Expanded(
             child: Card(
-              margin: const EdgeInsets.only(top: 16, right: 16, bottom: 16),
+              margin: EdgeInsets.only(top: 16, right: 16, bottom: 16),
               elevation: 48,
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: 16),
                 child: PackageFrameView(
-                  currentSendFrame: currentSendFrame,
-                  currentReceiveFrame: currentReceiveFrame,
-                  frameSize: frameSize,
-                  counter: _counter,
+                  items: Settings.packages,
                 ),
               ),
             ),

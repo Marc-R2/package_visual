@@ -1,3 +1,4 @@
+import 'package:package_visual/animation/package.dart';
 import 'package:package_visual/settings/protocol.dart';
 
 /// The settings used for the creation of new [Package]s.
@@ -9,7 +10,7 @@ class Settings {
   static Protocol protocol = Protocol.goBackN;
 
   /// Time in milliseconds to travel from sender to receiver (and bacl).
-  static int transmissionTime = 4096;
+  static int transmissionTime = 4069;
 
   /// The number of packages that are contained in a Frame.
   static int windowSize = 4;
@@ -19,4 +20,13 @@ class Settings {
 
   /// Time in milliseconds between sending packages.
   static int sendInterval = 1024;
+
+  /// The currently active [Package]s.
+  static Map<int, Package> packages = {};
+
+  /// The index of the first not yet confirmed package.
+  static int currentSendFrame = 0;
+
+  /// The index of the first not yet received package.
+  static int currentReceiveFrame = 0;
 }
