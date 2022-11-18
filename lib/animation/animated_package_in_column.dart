@@ -78,7 +78,10 @@ class _AnimatedPackageInColumnState extends State<AnimatedPackageInColumn> {
         height: widget.height,
         decoration: BoxDecoration(
           border: Border.all(),
-          color: widget.package.isReceived ? Colors.green : Colors.blue,
+          borderRadius: BorderRadius.circular(4),
+          color: DateTime.now().isAfter(widget.package.receiveTime)
+              ? Colors.green
+              : Colors.blue,
         ),
       ),
     );

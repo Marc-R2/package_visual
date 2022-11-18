@@ -59,9 +59,12 @@ class _OpenMenuState extends State<OpenMenu> {
                     children: [
                       const SizedBox(width: 16),
                       for (final item in widget.items)
-                        SizedBox(
-                          height: item.height,
-                          child: item.editable,
+                        InkWell(
+                          onTap: item.onTap,
+                          child: SizedBox(
+                            height: item.height,
+                            child: item.editable,
+                          ),
                         ),
                     ],
                   ),
