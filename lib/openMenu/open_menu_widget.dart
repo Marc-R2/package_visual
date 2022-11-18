@@ -45,6 +45,7 @@ class _OpenMenuState extends State<OpenMenu> {
                   ),
               ],
             ),
+            const SizedBox(width: 16),
             AnimatedContainer(
               duration: const Duration(milliseconds: 256),
               curve: Curves.easeInOut,
@@ -67,7 +68,6 @@ class _OpenMenuState extends State<OpenMenu> {
                 ),
               ),
             ),
-            const SizedBox(width: 16),
           ],
         ),
       ),

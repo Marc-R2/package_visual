@@ -58,7 +58,6 @@ class _MyHomePageState extends State<MyHomePage> {
   int get sendPos => Settings.currentSendFrame;
 
   void update([Timer? t]) {
-    print('update ${Settings.packages.keys}');
     final size = Settings.windowSize;
 
     for (var i = 0; i < size; i++) {
@@ -68,7 +67,9 @@ class _MyHomePageState extends State<MyHomePage> {
         Settings.packages[index] = Package.fromSettings(index: index);
         break;
       }
-      if (i == 0 && DateTime.now().isAfter(frame.receiveTime) && !frame.isDestroyed) {
+      if (i == 0 &&
+          DateTime.now().isAfter(frame.receiveTime) &&
+          !frame.isDestroyed) {
         Settings.packages[index] = frame.copyWith(isReceived: true);
         Settings.currentReceiveFrame = index + 1;
       }
@@ -84,7 +85,6 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
 
-    print('set state: $mounted');
     if (mounted) setState(() {});
   }
 
@@ -97,13 +97,76 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Row(
         children: [
           OpenMenu(
-            items: const [
-              OpenMenuItem(
+            items: [
+              // Headline
+              const OpenMenuItem(
                 leading: Icon(Icons.settings),
-                editable: Center(
+                editable: Align(
+                  alignment: Alignment.centerLeft,
                   child: Text(
                     'Settings',
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              // Transmission Time
+              OpenMenuItem(
+                leading: const Icon(Icons.connect_without_contact),
+                editable: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Latency: ${Settings.transmissionTime}ms',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+              ),
+              // Window Size
+              OpenMenuItem(
+                leading: const Icon(Icons.view_carousel),
+                editable: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Window Size: ${Settings.windowSize}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+              ),
+              // Timeout
+              OpenMenuItem(
+                leading: const Icon(Icons.timer),
+                editable: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Timeout: ${Settings.timeout}ms',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+              ),
+              // Send Interval
+              OpenMenuItem(
+                leading: const Icon(Icons.timelapse),
+                editable: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Send Interval: ${Settings.sendInterval}ms',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+              ),
+              // Reset
+              OpenMenuItem(
+                leading: const Icon(Icons.refresh),
+                editable: InkWell(
+                  onTap: () {
+                    Settings.reset();
+                    setState(() {});
+                  },
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Reset',
+                      style: const TextStyle(fontSize: 16),
+                    ),
                   ),
                 ),
               ),
@@ -112,10 +175,10 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Expanded(
             child: Card(
-              margin: EdgeInsets.only(top: 16, right: 16, bottom: 16),
+              margin: const EdgeInsets.only(top: 16, right: 16, bottom: 16),
               elevation: 48,
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 child: PackageFrameView(
                   items: Settings.packages,
                 ),

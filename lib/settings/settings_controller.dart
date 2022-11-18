@@ -22,11 +22,23 @@ class Settings {
   static int sendInterval = 1024;
 
   /// The currently active [Package]s.
-  static Map<int, Package> packages = {};
+  static final Map<int, Package> packages = {};
 
   /// The index of the first not yet confirmed package.
   static int currentSendFrame = 0;
 
   /// The index of the first not yet received package.
   static int currentReceiveFrame = 0;
+
+  static void reset() {
+    doSendPackages = true;
+    protocol = Protocol.goBackN;
+    transmissionTime = 4069;
+    windowSize = 4;
+    timeout = 8192;
+    sendInterval = 1024;
+    packages.clear();
+    currentSendFrame = 0;
+    currentReceiveFrame = 0;
+  }
 }
