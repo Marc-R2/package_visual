@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -51,6 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: LayoutBuilder(builder: (context, cons) {
         return ListView.builder(
           scrollDirection: Axis.horizontal,
+          itemCount: max(currentSendFrame, currentReceiveFrame) + 32,
           itemBuilder: (context, index) {
             final height = cons.maxHeight / 12;
             final width = height / 2;
