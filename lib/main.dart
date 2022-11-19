@@ -47,6 +47,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void toggleSettings() => setState(() => showSettings = !showSettings);
 
+  Future<void> reset() async {
+    await scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 512),
+      curve: Curves.easeInOutCirc,
+    );
+    Settings.reset();
+    if (mounted) setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,9 +68,12 @@ class _MyHomePageState extends State<MyHomePage> {
           OpenMenu(
             items: [
               // Headline
-              const OpenMenuItem(
-                leading: Icon(Icons.settings),
-                editable: Align(
+              OpenMenuItem(
+                leading: IconButton(
+                  onPressed: toggleSettings,
+                  icon: const Icon(Icons.settings),
+                ),
+                editable: const Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Settings',
@@ -71,59 +84,121 @@ class _MyHomePageState extends State<MyHomePage> {
               // Transmission Time
               OpenMenuItem(
                 leading: const Icon(Icons.connect_without_contact),
+                height: 72,
                 editable: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Latency: ${Settings.transmissionTime}ms',
-                    style: const TextStyle(fontSize: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Latency: ${Settings.transmissionTime}ms',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      Slider(
+                        value: Settings.transmissionTime * 1.0,
+                        min: 256,
+                        max: 8192,
+                        onChanged: (value) => setState(() {
+                          Settings.transmissionTime = value.toInt();
+                        }),
+                      ),
+                    ],
                   ),
                 ),
               ),
               // Window Size
               OpenMenuItem(
                 leading: const Icon(Icons.view_carousel),
+                height: 72,
                 editable: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Window Size: ${Settings.windowSize}',
-                    style: const TextStyle(fontSize: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Window Size: ${Settings.windowSize}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      Slider(
+                        value: Settings.windowSize * 1.0,
+                        min: 1,
+                        max: 16,
+                        onChanged: (value) => setState(() {
+                          Settings.windowSize = value.toInt();
+                        }),
+                      ),
+                    ],
                   ),
                 ),
               ),
               // Timeout
               OpenMenuItem(
                 leading: const Icon(Icons.timer),
+                height: 72,
                 editable: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Timeout: ${Settings.timeout}ms',
-                    style: const TextStyle(fontSize: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Timeout: ${Settings.timeout}ms',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color:
+                              Settings.timeout < Settings.transmissionTime * 2
+                                  ? Colors.red
+                                  : Colors.black,
+                        ),
+                      ),
+                      Slider(
+                        value: Settings.timeout * 1.0,
+                        min: 256,
+                        max: 8192 * 2,
+                        onChanged: (value) => setState(() {
+                          Settings.timeout = value.toInt();
+                        }),
+                      ),
+                    ],
                   ),
                 ),
               ),
               // Send Interval
               OpenMenuItem(
                 leading: const Icon(Icons.timelapse),
+                height: 72,
                 editable: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Send Interval: ${Settings.sendInterval}ms',
-                    style: const TextStyle(fontSize: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Send Interval: ${Settings.sendInterval}ms',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      Slider(
+                        value: Settings.sendInterval * 1.0,
+                        min: 64,
+                        max: 8192,
+                        onChanged: (value) => setState(() {
+                          Settings.sendInterval = value.toInt();
+                          PackageFrameView.setTimer();
+                        }),
+                      ),
+                    ],
                   ),
                 ),
               ),
               // Reset
               OpenMenuItem(
-                leading: const Icon(Icons.refresh),
-                onTap: () async {
-                  await scrollController.animateTo(
-                    0,
-                    duration: const Duration(milliseconds: 512),
-                    curve: Curves.easeInOutCirc,
-                  );
-                  Settings.reset();
-                  if (mounted) setState(() {});
-                },
+                leading: IconButton(
+                  onPressed: reset,
+                  icon: const Icon(Icons.refresh),
+                ),
+                onTap: reset,
                 editable: const Align(
                   alignment: Alignment.centerLeft,
                   child: Text(

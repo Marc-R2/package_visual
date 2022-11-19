@@ -32,7 +32,7 @@ class Settings {
 
   static void reset() {
     doSendPackages = true;
-    protocol = Protocol.goBackN;
+    protocol = Protocol.selectiveRepeat;
     transmissionTime = 4069;
     windowSize = 4;
     timeout = 8192;

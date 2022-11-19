@@ -17,18 +17,20 @@ class PackageFrameView extends StatefulWidget {
 
   final ScrollController scrollController;
 
+  static void Function() get setTimer => _PackageFrameViewState.setTimer;
+
   @override
   State<PackageFrameView> createState() => _PackageFrameViewState();
 }
 
 class _PackageFrameViewState extends State<PackageFrameView> {
-  int get _currentSendFrame => Settings.currentSendFrame;
+  static int get _currentSendFrame => Settings.currentSendFrame;
 
-  int get _currentReceiveFrame => Settings.currentReceiveFrame;
+  static int get _currentReceiveFrame => Settings.currentReceiveFrame;
 
   double _xScroll = 0;
 
-  Timer? updateTimer;
+  static Timer? updateTimer;
   Timer? updateTimerPos;
 
   @override
@@ -42,13 +44,7 @@ class _PackageFrameViewState extends State<PackageFrameView> {
     super.initState();
   }
 
-  @override
-  void dispose() {
-    updateTimer?.cancel();
-    super.dispose();
-  }
-
-  void setTimer() {
+  static void setTimer() {
     updateTimer?.cancel();
     updateTimer = Timer.periodic(
       Duration(milliseconds: Settings.sendInterval),
@@ -66,7 +62,6 @@ class _PackageFrameViewState extends State<PackageFrameView> {
         .where((element) => element.index == _currentReceiveFrame);
     if (receiveFrames.any((item) => item.isReceived && !item.isDestroyed)) {
       Settings.currentReceiveFrame++;
-      setState(() {});
     }
 
     // Move the slider for the confirmed packages
@@ -76,17 +71,16 @@ class _PackageFrameViewState extends State<PackageFrameView> {
     final finishedSendFrames =
         sendFrames.where((item) => item.isConfirmed && !item.isDestroyed);
 
-    if (finishedSendFrames.isNotEmpty) {
-      Settings.currentSendFrame++;
-      setState(() {});
-    }
+    if (finishedSendFrames.isNotEmpty) Settings.currentSendFrame++;
 
     Settings.packages.removeWhere(
       (item) => item.isConfirmed && item.index < _currentSendFrame,
     );
+
+    setState(() {});
   }
 
-  void update([Timer? t]) {
+  static void update([Timer? t]) {
     final size = Settings.windowSize;
 
     for (var i = 0; i < size; i++) {
@@ -105,18 +99,18 @@ class _PackageFrameViewState extends State<PackageFrameView> {
       });
 
       if (oldestFrame.protocol == Protocol.selectiveRepeat) {
-        if (frames.any((item) => item.isTimedOut) &&
-            !frames.any((item) => !item.isDestroyed && item.isConfirmed) &&
-            !frames.any((item) => !item.isTimedOut)) {
-          Settings.packages.add(Package.fromSettings(index: index));
-          break;
+        if (frames.any((item) => item.isTimedOut)) {
+          if (!frames.any((item) => !item.isDestroyed && item.isConfirmed)) {
+            if (!frames.any((item) => !item.isTimedOut)) {
+              Settings.packages.add(Package.fromSettings(index: index));
+              break;
+            }
+          }
         }
       } else if (oldestFrame.protocol == Protocol.goBackN) {
         // TODO(any): Implement
       }
     }
-
-    if (mounted) setState(() {});
   }
 
   List<Package> getItems(int index) =>
