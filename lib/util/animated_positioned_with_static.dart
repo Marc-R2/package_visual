@@ -115,13 +115,13 @@ class AnimatedStaticPositioned extends ImplicitlyAnimatedWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DoubleProperty('left', animatedLeft, defaultValue: null));
-    properties.add(DoubleProperty('top', animatedTop, defaultValue: null));
-    properties.add(DoubleProperty('right', animatedRight, defaultValue: null));
     properties
-        .add(DoubleProperty('bottom', animatedBottom, defaultValue: null));
-    properties.add(DoubleProperty('width', width, defaultValue: null));
-    properties.add(DoubleProperty('height', height, defaultValue: null));
+      ..add(DoubleProperty('left', animatedLeft, defaultValue: null))
+      ..add(DoubleProperty('top', animatedTop, defaultValue: null))
+      ..add(DoubleProperty('right', animatedRight, defaultValue: null))
+      ..add(DoubleProperty('bottom', animatedBottom, defaultValue: null))
+      ..add(DoubleProperty('width', width, defaultValue: null))
+      ..add(DoubleProperty('height', height, defaultValue: null));
   }
 }
 
@@ -136,24 +136,41 @@ class _AnimatedPositionedState
 
   @override
   void forEachTween(TweenVisitor<dynamic> visitor) {
-    _left = visitor(_left, widget.animatedLeft,
-            (dynamic value) => Tween<double>(begin: value as double))
-        as Tween<double>?;
-    _top = visitor(_top, widget.animatedTop,
-            (dynamic value) => Tween<double>(begin: value as double))
-        as Tween<double>?;
-    _right = visitor(_right, widget.animatedRight,
-            (dynamic value) => Tween<double>(begin: value as double))
-        as Tween<double>?;
-    _bottom = visitor(_bottom, widget.animatedBottom,
-            (dynamic value) => Tween<double>(begin: value as double))
-        as Tween<double>?;
-    _width = visitor(_width, widget.width,
-            (dynamic value) => Tween<double>(begin: value as double))
-        as Tween<double>?;
-    _height = visitor(_height, widget.height,
-            (dynamic value) => Tween<double>(begin: value as double))
-        as Tween<double>?;
+    _left = visitor(
+      _left,
+      widget.animatedLeft,
+      (dynamic value) => Tween<double>(begin: value as double),
+    ) as Tween<double>?;
+
+    _top = visitor(
+      _top,
+      widget.animatedTop,
+      (dynamic value) => Tween<double>(begin: value as double),
+    ) as Tween<double>?;
+
+    _right = visitor(
+      _right,
+      widget.animatedRight,
+      (dynamic value) => Tween<double>(begin: value as double),
+    ) as Tween<double>?;
+
+    _bottom = visitor(
+      _bottom,
+      widget.animatedBottom,
+      (dynamic value) => Tween<double>(begin: value as double),
+    ) as Tween<double>?;
+
+    _width = visitor(
+      _width,
+      widget.width,
+      (dynamic value) => Tween<double>(begin: value as double),
+    ) as Tween<double>?;
+
+    _height = visitor(
+      _height,
+      widget.height,
+      (dynamic value) => Tween<double>(begin: value as double),
+    ) as Tween<double>?;
   }
 
   double? add(double? a, double? b) {
@@ -179,11 +196,12 @@ class _AnimatedPositionedState
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder description) {
     super.debugFillProperties(description);
-    description.add(ObjectFlagProperty<Tween<double>>.has('left', _left));
-    description.add(ObjectFlagProperty<Tween<double>>.has('top', _top));
-    description.add(ObjectFlagProperty<Tween<double>>.has('right', _right));
-    description.add(ObjectFlagProperty<Tween<double>>.has('bottom', _bottom));
-    description.add(ObjectFlagProperty<Tween<double>>.has('width', _width));
-    description.add(ObjectFlagProperty<Tween<double>>.has('height', _height));
+    description
+      ..add(ObjectFlagProperty<Tween<double>>.has('left', _left))
+      ..add(ObjectFlagProperty<Tween<double>>.has('top', _top))
+      ..add(ObjectFlagProperty<Tween<double>>.has('right', _right))
+      ..add(ObjectFlagProperty<Tween<double>>.has('bottom', _bottom))
+      ..add(ObjectFlagProperty<Tween<double>>.has('width', _width))
+      ..add(ObjectFlagProperty<Tween<double>>.has('height', _height));
   }
 }

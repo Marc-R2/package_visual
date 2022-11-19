@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:package_visual/animation/package.dart';
 import 'package:package_visual/animation/package_column.dart';
+import 'package:package_visual/settings/protocol.dart';
 import 'package:package_visual/settings/settings_controller.dart';
 import 'package:package_visual/util/animated_positioned_with_static.dart';
 import 'package:package_visual/util/scroll_behavior.dart';
@@ -16,18 +17,21 @@ class PackageFrameView extends StatefulWidget {
 
   final ScrollController scrollController;
 
+  static void Function() get setTimer => _PackageFrameViewState.setTimer;
+
   @override
   State<PackageFrameView> createState() => _PackageFrameViewState();
 }
 
 class _PackageFrameViewState extends State<PackageFrameView> {
-  int get _currentSendFrame => Settings.currentSendFrame;
+  static int get _currentSendFrame => Settings.currentSendFrame;
 
-  int get _currentReceiveFrame => Settings.currentReceiveFrame;
+  static int get _currentReceiveFrame => Settings.currentReceiveFrame;
 
   double _xScroll = 0;
+  double _width = 1;
 
-  Timer? updateTimer;
+  static Timer? updateTimer;
   Timer? updateTimerPos;
 
   @override
@@ -41,13 +45,7 @@ class _PackageFrameViewState extends State<PackageFrameView> {
     super.initState();
   }
 
-  @override
-  void dispose() {
-    updateTimer?.cancel();
-    super.dispose();
-  }
-
-  void setTimer() {
+  static void setTimer() {
     updateTimer?.cancel();
     updateTimer = Timer.periodic(
       Duration(milliseconds: Settings.sendInterval),
@@ -65,7 +63,6 @@ class _PackageFrameViewState extends State<PackageFrameView> {
         .where((element) => element.index == _currentReceiveFrame);
     if (receiveFrames.any((item) => item.isReceived && !item.isDestroyed)) {
       Settings.currentReceiveFrame++;
-      setState(() {});
     }
 
     // Move the slider for the confirmed packages
@@ -77,17 +74,19 @@ class _PackageFrameViewState extends State<PackageFrameView> {
 
     if (finishedSendFrames.isNotEmpty) {
       Settings.currentSendFrame++;
-      Settings.packages.map(Settings.packages.remove);
-      setState(() {});
+      autoUpdateScroll();
     }
 
-    Settings.packages.removeWhere((item) => item.isConfirmed);
+    Settings.packages.removeWhere(
+      (item) => item.isConfirmed && item.index < _currentSendFrame,
+    );
+
+    setState(() {});
   }
 
-  void update([Timer? t]) {
-    if (mounted) setState(() {});
-
+  static void update([Timer? t]) {
     final size = Settings.windowSize;
+    if (!Settings.doSendPackages) return;
 
     for (var i = 0; i < size; i++) {
       final index = _currentSendFrame + i;
@@ -98,28 +97,40 @@ class _PackageFrameViewState extends State<PackageFrameView> {
         break;
       }
 
-      if (!frames.any((element) => !element.isTimedOut)) {
-        Settings.packages.add(Package.fromSettings(index: index));
-        break;
-      }
+      // Get the oldest frame
+      final oldestFrame = frames.reduce((value, element) {
+        if (value.receiveTime.isBefore(element.receiveTime)) return value;
+        return element;
+      });
 
-      /*if (DateTime.now().isAfter(frame.receiveTime) && !frame.isDestroyed) {
-        Settings.packages.add(frame.copyWith(isReceived: true));
-        Settings.currentReceiveFrame = index + 1;
+      if (oldestFrame.protocol == Protocol.selectiveRepeat) {
+        if (frames.any((item) => item.isTimedOut)) {
+          if (!frames.any((item) => !item.isDestroyed && item.isConfirmed)) {
+            if (!frames.any((item) => !item.isTimedOut)) {
+              Settings.packages.add(Package.fromSettings(index: index));
+              break;
+            }
+          }
+        }
+      } else if (oldestFrame.protocol == Protocol.goBackN) {
+        // TODO(any): Implement
       }
-      if (i == 0 && frame.isConfirmed) {
-        i = -1;
-        Settings.currentSendFrame++;
-        Settings.packages.removeAt(index);
-        continue;
-      }
-      if (frame.isTimedOut && !frame.isConfirmed) {
-        Settings.packages[index] = Package.fromSettings(index: index);
-        break;
-      }*/
+    }
+  }
+
+  void autoUpdateScroll() {
+    final newPos = _currentSendFrame * (_width + 16);
+    final scrollPos = widget.scrollController.offset;
+
+    // if new position is in range of a few _widths, scroll to it
+    if (newPos - scrollPos < _width * 12) {
+      widget.scrollController.animateTo(
+        newPos,
+        duration: const Duration(milliseconds: 256),
+        curve: Curves.easeInOut,
+      );
     }
 
-    if (mounted) setState(() {});
   }
 
   List<Package> getItems(int index) =>
@@ -131,13 +142,15 @@ class _PackageFrameViewState extends State<PackageFrameView> {
       builder: (context, cons) {
         final height = cons.maxHeight / 12;
         final width = height / 2;
+        _width = width;
         return Stack(
           children: [
             AnimatedStaticPositioned(
-              duration: const Duration(milliseconds: 256),
+              duration: Duration(milliseconds: min(256, Settings.sendInterval)),
               staticLeft: _xScroll * -1,
               animatedLeft: (width + 16) * Settings.currentSendFrame + 16,
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 256),
                 width: (width + 16) * Settings.windowSize,
                 height: height + 16,
                 decoration: BoxDecoration(
@@ -147,11 +160,12 @@ class _PackageFrameViewState extends State<PackageFrameView> {
               ),
             ),
             AnimatedStaticPositioned(
-              duration: const Duration(milliseconds: 256),
+              duration: Duration(milliseconds: min(256, Settings.sendInterval)),
               staticBottom: 0,
               staticLeft: _xScroll * -1,
               animatedLeft: (width + 16) * Settings.currentReceiveFrame + 16,
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 256),
                 width: (width + 16) * Settings.windowSize,
                 height: height + 16,
                 decoration: BoxDecoration(

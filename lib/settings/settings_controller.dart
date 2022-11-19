@@ -1,4 +1,5 @@
 import 'package:package_visual/animation/package.dart';
+import 'package:package_visual/animation/package_frame_view.dart';
 import 'package:package_visual/settings/protocol.dart';
 
 /// The settings used for the creation of new [Package]s.
@@ -7,16 +8,16 @@ class Settings {
   static bool doSendPackages = true;
 
   /// The [Protocol] used for transmission.
-  static Protocol protocol = Protocol.goBackN;
+  static Protocol protocol = Protocol.selectiveRepeat;
 
   /// Time in milliseconds to travel from sender to receiver (and bacl).
-  static int transmissionTime = 1024;
+  static int transmissionTime = 4048;
 
   /// The number of packages that are contained in a Frame.
   static int windowSize = 8;
 
   /// Time in milliseconds before a package times out.
-  static int timeout = 5192;
+  static int timeout = 9192;
 
   /// Time in milliseconds between sending packages.
   static int sendInterval = 512;
@@ -32,7 +33,7 @@ class Settings {
 
   static void reset() {
     doSendPackages = true;
-    protocol = Protocol.goBackN;
+    protocol = Protocol.selectiveRepeat;
     transmissionTime = 4069;
     windowSize = 4;
     timeout = 8192;
@@ -40,5 +41,6 @@ class Settings {
     packages.clear();
     currentSendFrame = 0;
     currentReceiveFrame = 0;
+    PackageFrameView.setTimer();
   }
 }

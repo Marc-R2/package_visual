@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:package_visual/animation/animated_package_in_column.dart';
+import 'package:package_visual/animation/animated_timeout.dart';
 import 'package:package_visual/animation/package.dart';
 import 'package:package_visual/settings/settings_controller.dart';
 
@@ -34,11 +35,6 @@ class PackageColumn extends StatelessWidget {
 
   int get _currentReceiveFrame => Settings.currentReceiveFrame;
 
-  bool? _isReceived(DateTime? time) {
-    if (time == null) return null;
-    return DateTime.now().isAfter(time);
-  }
-
   @override
   Widget build(BuildContext context) {
     final isReceived = package.isEmpty
@@ -52,42 +48,45 @@ class PackageColumn extends StatelessWidget {
 
     final column = Padding(
       padding: const EdgeInsets.all(8),
-      child: DecoratedBox(
-        key: ValueKey(index),
-        decoration: BoxDecoration(color: Colors.grey.withOpacity(0.25)),
-        child: Column(
-          children: [
-            // Sending Rectangle on top
-            SizedBox(
-              width: width,
-              height: height,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 512),
-                curve: Curves.easeInOut,
-                decoration: BoxDecoration(
-                  border: Border.all(),
-                  borderRadius: BorderRadius.circular(4),
-                  color: isConfirmed ? Colors.yellow : Colors.blue,
+      child: IgnorePointer(
+        child: DecoratedBox(
+          key: ValueKey(index),
+          decoration: BoxDecoration(color: Colors.grey.withOpacity(0.25)),
+          child: Column(
+            children: [
+              // Sending Rectangle on top
+              SizedBox(
+                width: width,
+                height: height,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 512),
+                  curve: Curves.easeInOut,
+                  decoration: BoxDecoration(
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(4),
+                    color: isConfirmed ? Colors.yellow : Colors.blue,
+                  ),
                 ),
               ),
-            ),
-            // Space between the two Rectangles
-            const Spacer(),
-            // Receiving Rectangle on bottom
-            SizedBox(
-              width: width,
-              height: height,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 256),
-                curve: Curves.easeInOut,
-                decoration: BoxDecoration(
-                  border: Border.all(),
-                  borderRadius: BorderRadius.circular(4),
-                  color: isReceived ? Colors.deepPurple.shade900 : Colors.white,
+              // Space between the two Rectangles
+              const Spacer(),
+              // Receiving Rectangle on bottom
+              SizedBox(
+                width: width,
+                height: height,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 256),
+                  curve: Curves.easeInOut,
+                  decoration: BoxDecoration(
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(4),
+                    color:
+                        isReceived ? Colors.deepPurple.shade900 : Colors.white,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -107,64 +106,9 @@ class PackageColumn extends StatelessWidget {
         AnimatedTimeout(
           height: height,
           width: width,
-          package: package.last,
+          package: package,
         ),
       ],
-    );
-  }
-}
-
-class AnimatedTimeout extends StatefulWidget {
-  const AnimatedTimeout({
-    super.key,
-    required this.width,
-    required this.height,
-    required this.package,
-  });
-
-  final double width;
-  final double height;
-  final Package package;
-
-  @override
-  State<AnimatedTimeout> createState() => _AnimatedTimeoutState();
-}
-
-class _AnimatedTimeoutState extends State<AnimatedTimeout> {
-  double height = 0;
-  Timer? updateTimer;
-
-  @override
-  void initState() {
-    _update();
-    updateTimer = Timer.periodic(const Duration(milliseconds: 256), _update);
-    super.initState();
-  }
-
-  void _update([Timer? t]) {
-    height = widget.height * widget.package.timeOutProgress;
-    if (mounted) setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: AnimatedOpacity(
-        opacity: widget.package.timeOutProgress > 0.92 ? 0 : 1,
-        duration: const Duration(milliseconds: 256),
-        child: AnimatedContainer(
-          height: height,
-          width: widget.width,
-          duration: const Duration(milliseconds: 256),
-          curve: Curves.easeInOut,
-          decoration: BoxDecoration(
-            border: Border.all(),
-            borderRadius: BorderRadius.circular(4),
-            color: Colors.red.shade500,
-          ),
-        ),
-      ),
     );
   }
 }
