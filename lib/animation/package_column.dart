@@ -79,7 +79,8 @@ class PackageColumn extends StatelessWidget {
                   decoration: BoxDecoration(
                     border: Border.all(),
                     borderRadius: BorderRadius.circular(4),
-                    color: isReceived ? Colors.deepPurple.shade900 : Colors.white,
+                    color:
+                        isReceived ? Colors.deepPurple.shade900 : Colors.white,
                   ),
                 ),
               ),
@@ -104,7 +105,7 @@ class PackageColumn extends StatelessWidget {
         AnimatedTimeout(
           height: height,
           width: width,
-          package: package.last,
+          package: package,
         ),
       ],
     );
@@ -121,7 +122,7 @@ class AnimatedTimeout extends StatefulWidget {
 
   final double width;
   final double height;
-  final Package package;
+  final List<Package> package;
 
   @override
   State<AnimatedTimeout> createState() => _AnimatedTimeoutState();
@@ -139,7 +140,12 @@ class _AnimatedTimeoutState extends State<AnimatedTimeout> {
   }
 
   void _update([Timer? t]) {
-    height = widget.height * widget.package.timeOutProgress;
+    // Get the highest package.timeOutProgress value
+    final progress = widget.package
+        .map((item) => item.isDone ? 0 : item.timeOutProgress)
+        .reduce((value, element) => value > element ? value : element);
+
+    height = widget.height * progress;
     if (mounted) setState(() {});
   }
 
@@ -147,19 +153,15 @@ class _AnimatedTimeoutState extends State<AnimatedTimeout> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8),
-      child: AnimatedOpacity(
-        opacity: widget.package.timeOutProgress > 0.92 ? 0 : 1,
+      child: AnimatedContainer(
+        height: height,
+        width: widget.width,
         duration: const Duration(milliseconds: 256),
-        child: AnimatedContainer(
-          height: height,
-          width: widget.width,
-          duration: const Duration(milliseconds: 256),
-          curve: Curves.easeInOut,
-          decoration: BoxDecoration(
-            border: Border.all(),
-            borderRadius: BorderRadius.circular(4),
-            color: Colors.red.shade500,
-          ),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
+          border: Border.all(),
+          borderRadius: BorderRadius.circular(4),
+          color: Colors.red.shade500,
         ),
       ),
     );

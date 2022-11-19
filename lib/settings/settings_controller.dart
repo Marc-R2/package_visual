@@ -7,7 +7,7 @@ class Settings {
   static bool doSendPackages = true;
 
   /// The [Protocol] used for transmission.
-  static Protocol protocol = Protocol.goBackN;
+  static Protocol protocol = Protocol.selectiveRepeat;
 
   /// Time in milliseconds to travel from sender to receiver (and bacl).
   static int transmissionTime = 4048;

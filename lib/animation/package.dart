@@ -1,8 +1,10 @@
+import 'package:package_visual/settings/protocol.dart';
 import 'package:package_visual/settings/settings_controller.dart';
 
 class Package {
   const Package({
     required this.index,
+    required this.protocol,
     required this.startTime,
     required this.receiveTime,
     required this.confirmationTime,
@@ -20,6 +22,7 @@ class Package {
     return Package(
       index: index,
       startTime: now,
+      protocol: Settings.protocol,
       receiveTime: now.add(transmissionTime),
       confirmationTime: now.add(transmissionTime * 2),
       timeoutTime: now.add(Duration(milliseconds: Settings.timeout)),
@@ -31,6 +34,9 @@ class Package {
 
   /// The index of the package.
   final int index;
+
+  /// The protocol used to send the package.
+  final Protocol protocol;
 
   /// Time when the package was sent.
   final DateTime startTime;
@@ -81,6 +87,7 @@ class Package {
 
   Package copyWith({
     int? index,
+    Protocol? protocol,
     DateTime? startTime,
     DateTime? receiveTime,
     DateTime? confirmationTime,
@@ -91,6 +98,7 @@ class Package {
   }) {
     return Package(
       index: index ?? this.index,
+      protocol: protocol ?? this.protocol,
       startTime: startTime ?? this.startTime,
       receiveTime: receiveTime ?? this.receiveTime,
       confirmationTime: confirmationTime ?? this.confirmationTime,

@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:package_visual/animation/package.dart';
 import 'package:package_visual/animation/package_column.dart';
+import 'package:package_visual/settings/protocol.dart';
 import 'package:package_visual/settings/settings_controller.dart';
 import 'package:package_visual/util/animated_positioned_with_static.dart';
 import 'package:package_visual/util/scroll_behavior.dart';
@@ -77,7 +78,6 @@ class _PackageFrameViewState extends State<PackageFrameView> {
 
     if (finishedSendFrames.isNotEmpty) {
       Settings.currentSendFrame++;
-      // Settings.packages.map(Settings.packages.remove);
       setState(() {});
     }
 
@@ -87,8 +87,6 @@ class _PackageFrameViewState extends State<PackageFrameView> {
   }
 
   void update([Timer? t]) {
-    if (mounted) setState(() {});
-
     final size = Settings.windowSize;
 
     for (var i = 0; i < size; i++) {
@@ -100,29 +98,22 @@ class _PackageFrameViewState extends State<PackageFrameView> {
         break;
       }
 
-      if (frames.any((item) => item.isTimedOut)) {
-        if (!frames.any((item) => !item.isDestroyed && item.isConfirmed)) {
-          if (!frames.any((item) => !item.isTimedOut)) {
-            Settings.packages.add(Package.fromSettings(index: index));
-            break;
-          }
-        }
-      }
+      // Get the oldest frame
+      final oldestFrame = frames.reduce((value, element) {
+        if (value.receiveTime.isBefore(element.receiveTime)) return value;
+        return element;
+      });
 
-      /*if (DateTime.now().isAfter(frame.receiveTime) && !frame.isDestroyed) {
-        Settings.packages.add(frame.copyWith(isReceived: true));
-        Settings.currentReceiveFrame = index + 1;
+      if (oldestFrame.protocol == Protocol.selectiveRepeat) {
+        if (frames.any((item) => item.isTimedOut) &&
+            !frames.any((item) => !item.isDestroyed && item.isConfirmed) &&
+            !frames.any((item) => !item.isTimedOut)) {
+          Settings.packages.add(Package.fromSettings(index: index));
+          break;
+        }
+      } else if (oldestFrame.protocol == Protocol.goBackN) {
+        // TODO(any): Implement
       }
-      if (i == 0 && frame.isConfirmed) {
-        i = -1;
-        Settings.currentSendFrame++;
-        Settings.packages.removeAt(index);
-        continue;
-      }
-      if (frame.isTimedOut && !frame.isConfirmed) {
-        Settings.packages[index] = Package.fromSettings(index: index);
-        break;
-      }*/
     }
 
     if (mounted) setState(() {});

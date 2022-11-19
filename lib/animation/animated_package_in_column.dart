@@ -80,7 +80,6 @@ class _AnimatedPackageInColumnState extends State<AnimatedPackageInColumn> {
       child: InkWell(
         onTap: () {
           if (widget.package.isDestroyed) return;
-          print('destroy: $index');
           Settings.packages.remove(widget.package);
           Settings.packages.add(widget.package.copyWith(isDestroyed: true));
         },
