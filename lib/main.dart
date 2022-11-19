@@ -37,65 +37,15 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool showSettings = false;
 
-  Timer? updateTimer;
-
   late final ScrollController scrollController;
 
   @override
   void initState() {
-    setTimer();
     scrollController = ScrollController();
     super.initState();
   }
 
-  @override
-  void dispose() {
-    updateTimer?.cancel();
-    super.dispose();
-  }
-
-  void setTimer() {
-    updateTimer?.cancel();
-    updateTimer = Timer.periodic(
-      Duration(milliseconds: Settings.sendInterval),
-      update,
-    );
-  }
-
   void toggleSettings() => setState(() => showSettings = !showSettings);
-
-  int get sendPos => Settings.currentSendFrame;
-
-  void update([Timer? t]) {
-    if (mounted) setState(() {});
-
-    final size = Settings.windowSize;
-
-    for (var i = 0; i < size; i++) {
-      final index = sendPos + i;
-      final frame = Settings.packages[index];
-      if (frame == null) {
-        Settings.packages[index] = Package.fromSettings(index: index);
-        break;
-      }
-      if (DateTime.now().isAfter(frame.receiveTime) && !frame.isDestroyed) {
-        Settings.packages[index] = frame.copyWith(isReceived: true);
-        Settings.currentReceiveFrame = index + 1;
-      }
-      if (i == 0 && frame.isConfirmed) {
-        i = -1;
-        Settings.currentSendFrame++;
-        Settings.packages.remove(index);
-        continue;
-      }
-      if (frame.isTimedOut && !frame.isConfirmed) {
-        Settings.packages[index] = Package.fromSettings(index: index);
-        break;
-      }
-    }
-
-    if (mounted) setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -191,10 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
               elevation: 48,
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                child: PackageFrameView(
-                  items: Settings.packages,
-                  scrollController: scrollController,
-                ),
+                child: PackageFrameView(scrollController: scrollController),
               ),
             ),
           ),

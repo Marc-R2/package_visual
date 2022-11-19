@@ -10,19 +10,19 @@ class Settings {
   static Protocol protocol = Protocol.goBackN;
 
   /// Time in milliseconds to travel from sender to receiver (and bacl).
-  static int transmissionTime = 4069;
+  static int transmissionTime = 1024;
 
   /// The number of packages that are contained in a Frame.
-  static int windowSize = 4;
+  static int windowSize = 8;
 
   /// Time in milliseconds before a package times out.
-  static int timeout = 8192;
+  static int timeout = 5192;
 
   /// Time in milliseconds between sending packages.
-  static int sendInterval = 1024;
+  static int sendInterval = 512;
 
   /// The currently active [Package]s.
-  static final Map<int, Package> packages = {};
+  static final List<Package> packages = [];
 
   /// The index of the first not yet confirmed package.
   static int currentSendFrame = 0;
