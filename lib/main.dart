@@ -81,6 +81,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               ),
+              // Do emit packages
+              OpenMenuItem(
+                height: 72,
+                leading: Checkbox(
+                  value: Settings.doSendPackages,
+                  onChanged: (value) {
+                    Settings.doSendPackages = value!;
+                    if (mounted) setState(() {});
+                  },
+                ),
+                editable: const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Do send packages'),
+                ),
+              ),
               // Transmission Time
               OpenMenuItem(
                 leading: const Icon(Icons.connect_without_contact),
@@ -97,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       Slider(
                         value: Settings.transmissionTime * 1.0,
-                        min: 256,
+                        min: 64,
                         max: 8192,
                         onChanged: (value) => setState(() {
                           Settings.transmissionTime = value.toInt();

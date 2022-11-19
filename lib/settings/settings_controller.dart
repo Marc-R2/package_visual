@@ -1,4 +1,5 @@
 import 'package:package_visual/animation/package.dart';
+import 'package:package_visual/animation/package_frame_view.dart';
 import 'package:package_visual/settings/protocol.dart';
 
 /// The settings used for the creation of new [Package]s.
@@ -40,5 +41,6 @@ class Settings {
     packages.clear();
     currentSendFrame = 0;
     currentReceiveFrame = 0;
+    PackageFrameView.setTimer();
   }
 }

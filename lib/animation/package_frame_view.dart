@@ -29,6 +29,7 @@ class _PackageFrameViewState extends State<PackageFrameView> {
   static int get _currentReceiveFrame => Settings.currentReceiveFrame;
 
   double _xScroll = 0;
+  double _width = 1;
 
   static Timer? updateTimer;
   Timer? updateTimerPos;
@@ -71,7 +72,10 @@ class _PackageFrameViewState extends State<PackageFrameView> {
     final finishedSendFrames =
         sendFrames.where((item) => item.isConfirmed && !item.isDestroyed);
 
-    if (finishedSendFrames.isNotEmpty) Settings.currentSendFrame++;
+    if (finishedSendFrames.isNotEmpty) {
+      Settings.currentSendFrame++;
+      autoUpdateScroll();
+    }
 
     Settings.packages.removeWhere(
       (item) => item.isConfirmed && item.index < _currentSendFrame,
@@ -82,6 +86,7 @@ class _PackageFrameViewState extends State<PackageFrameView> {
 
   static void update([Timer? t]) {
     final size = Settings.windowSize;
+    if (!Settings.doSendPackages) return;
 
     for (var i = 0; i < size; i++) {
       final index = _currentSendFrame + i;
@@ -113,6 +118,21 @@ class _PackageFrameViewState extends State<PackageFrameView> {
     }
   }
 
+  void autoUpdateScroll() {
+    final newPos = _currentSendFrame * (_width + 16);
+    final scrollPos = widget.scrollController.offset;
+
+    // if new position is in range of a few _widths, scroll to it
+    if (newPos - scrollPos < _width * 12) {
+      widget.scrollController.animateTo(
+        newPos,
+        duration: const Duration(milliseconds: 256),
+        curve: Curves.easeInOut,
+      );
+    }
+
+  }
+
   List<Package> getItems(int index) =>
       Settings.packages.where((item) => item.index == index).toList();
 
@@ -122,13 +142,15 @@ class _PackageFrameViewState extends State<PackageFrameView> {
       builder: (context, cons) {
         final height = cons.maxHeight / 12;
         final width = height / 2;
+        _width = width;
         return Stack(
           children: [
             AnimatedStaticPositioned(
-              duration: const Duration(milliseconds: 256),
+              duration: Duration(milliseconds: min(256, Settings.sendInterval)),
               staticLeft: _xScroll * -1,
               animatedLeft: (width + 16) * Settings.currentSendFrame + 16,
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 256),
                 width: (width + 16) * Settings.windowSize,
                 height: height + 16,
                 decoration: BoxDecoration(
@@ -138,11 +160,12 @@ class _PackageFrameViewState extends State<PackageFrameView> {
               ),
             ),
             AnimatedStaticPositioned(
-              duration: const Duration(milliseconds: 256),
+              duration: Duration(milliseconds: min(256, Settings.sendInterval)),
               staticBottom: 0,
               staticLeft: _xScroll * -1,
               animatedLeft: (width + 16) * Settings.currentReceiveFrame + 16,
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 256),
                 width: (width + 16) * Settings.windowSize,
                 height: height + 16,
                 decoration: BoxDecoration(
