@@ -1,7 +1,9 @@
 import 'package:package_visual/settings/protocol.dart';
 import 'package:package_visual/settings/settings_controller.dart';
 
+/// Package
 class Package {
+  /// Create a new Package instance
   const Package({
     required this.index,
     required this.protocol,
@@ -85,6 +87,7 @@ class Package {
       : now.difference(startTime).inMilliseconds /
           receiveTime.difference(startTime).inMilliseconds;
 
+  /// Copy the package with the given values.
   Package copyWith({
     int? index,
     Protocol? protocol,

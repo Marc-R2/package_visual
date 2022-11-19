@@ -31,6 +31,7 @@ class Settings {
   /// The index of the first not yet received package.
   static int currentReceiveFrame = 0;
 
+  /// Reset the settings to some values that work well.
   static void reset() {
     doSendPackages = true;
     protocol = Protocol.selectiveRepeat;

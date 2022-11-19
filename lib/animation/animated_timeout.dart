@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:package_visual/animation/package.dart';
 
+/// Animate a red box representing the timeout of the oldest package
 class AnimatedTimeout extends StatefulWidget {
+  /// Create a new AnimatedTimeout instance
   const AnimatedTimeout({
     super.key,
     required this.width,
@@ -11,8 +13,13 @@ class AnimatedTimeout extends StatefulWidget {
     required this.package,
   });
 
+  /// width of the timeout box
   final double width;
+
+  /// height of the timeout box
   final double height;
+
+  /// The package to check for timeout
   final List<Package> package;
 
   @override

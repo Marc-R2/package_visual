@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'package:package_visual/openMenu/open_menu_item.dart';
 
+/// A widget that displays a OpenMenu
+///
+/// A OpenMenu allways shows a leading widget and can reveal a hidden widget
 class OpenMenu extends StatefulWidget {
+  /// Create a new OpenMenu instance
   const OpenMenu({
     super.key,
     required this.items,
@@ -10,10 +14,13 @@ class OpenMenu extends StatefulWidget {
     this.menuWidth = 256,
   });
 
+  /// The items to display
   final List<OpenMenuItem> items;
 
+  /// Whether the hidden widgets should be shown
   final bool showMenu;
 
+  /// The width of the hidden widgets area
   final double menuWidth;
 
   @override

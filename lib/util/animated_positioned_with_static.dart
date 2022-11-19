@@ -15,8 +15,8 @@ import 'package:flutter/material.dart';
 /// changing as a result of this animation. If the size is intended to remain
 /// the same, with only the _position_ changing over time, then consider
 /// [SlideTransition] instead. [SlideTransition] only triggers a repaint each
-/// frame of the animation, whereas [AnimatedStaticPositioned] will trigger a relayout
-/// as well.
+/// frame of the animation, whereas [AnimatedStaticPositioned] will trigger
+/// a relayout as well.
 ///
 /// Here's an illustration of what using this widget looks like, using a [curve]
 /// of [Curves.fastOutSlowIn].
@@ -26,7 +26,8 @@ import 'package:flutter/material.dart';
 /// widget will automatically animate to the new target position. If you require
 /// more control over the animation (e.g. if you want to stop it mid-animation),
 /// consider using a [PositionedTransition] instead, which takes a provided
-/// [Animation] as an argument. While that allows you to fine-tune the animation,
+/// [Animation] as an argument.
+/// While that allows you to fine-tune the animation,
 /// it also requires more development overhead as you have to manually manage
 /// the lifecycle of the underlying [AnimationController].
 ///
@@ -46,8 +47,9 @@ import 'package:flutter/material.dart';
 class AnimatedStaticPositioned extends ImplicitlyAnimatedWidget {
   /// Creates a widget that animates its position implicitly.
   ///
-  /// Only two out of the three horizontal values ([animatedLeft], [animatedRight],
-  /// [width]), and only two out of the three vertical values ([animatedTop],
+  /// Only two out of the three horizontal values
+  /// ([animatedLeft], [animatedRight], [width]),
+  /// and only two out of the three vertical values ([animatedTop],
   /// [animatedBottom], [height]), can be set. In each case, at least one of
   /// the three must be null.
   ///
@@ -79,32 +81,46 @@ class AnimatedStaticPositioned extends ImplicitlyAnimatedWidget {
   /// The offset of the child's left edge from the left of the stack.
   final double? animatedLeft;
 
+  /// A static left offset
+  ///
+  /// This value is added without affecting the animation
   final double? staticLeft;
 
   /// The offset of the child's top edge from the top of the stack.
   final double? animatedTop;
 
+  /// A static top offset
+  ///
+  /// This value is added without affecting the animation
   final double? staticTop;
 
   /// The offset of the child's right edge from the right of the stack.
   final double? animatedRight;
 
+  /// A static right offset
+  ///
+  /// This value is added without affecting the animation
   final double? staticRight;
 
   /// The offset of the child's bottom edge from the bottom of the stack.
   final double? animatedBottom;
 
+  /// A static bottom offset
+  ///
+  /// This value is added without affecting the animation
   final double? staticBottom;
 
   /// The child's width.
   ///
-  /// Only two out of the three horizontal values ([animatedLeft], [animatedRight], [width]) can
+  /// Only two out of the three horizontal values
+  /// ([animatedLeft], [animatedRight], [width]) can
   /// be set. The third must be null.
   final double? width;
 
   /// The child's height.
   ///
-  /// Only two out of the three vertical values ([animatedTop], [animatedBottom], [height]) can
+  /// Only two out of the three vertical values
+  /// ([animatedTop], [animatedBottom], [height]) can
   /// be set. The third must be null.
   final double? height;
 

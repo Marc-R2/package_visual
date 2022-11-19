@@ -1,12 +1,12 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:package_visual/animation/animated_package_in_column.dart';
 import 'package:package_visual/animation/animated_timeout.dart';
 import 'package:package_visual/animation/package.dart';
 import 'package:package_visual/settings/settings_controller.dart';
 
+/// A widget that displays a Column for a Package
 class PackageColumn extends StatelessWidget {
+  /// Create a new PackageColumn instance
   const PackageColumn({
     super.key,
     required this.index,

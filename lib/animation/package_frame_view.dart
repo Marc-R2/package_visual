@@ -9,14 +9,19 @@ import 'package:package_visual/settings/settings_controller.dart';
 import 'package:package_visual/util/animated_positioned_with_static.dart';
 import 'package:package_visual/util/scroll_behavior.dart';
 
+/// A widget for the animation area
 class PackageFrameView extends StatefulWidget {
+  /// Create a new PackageFrameView instance
   const PackageFrameView({
     super.key,
     required this.scrollController,
   });
 
+  /// The ScrollController for the ListView in the animated area
   final ScrollController scrollController;
 
+  /// Update the timer for the animation
+  /// to match the sendInterval
   static void Function() get setTimer => _PackageFrameViewState.setTimer;
 
   @override

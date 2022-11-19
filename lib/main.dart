@@ -1,17 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:package_visual/animation/package.dart';
+import 'package:package_visual/animation/package_frame_view.dart';
 import 'package:package_visual/openMenu/open_menu_item.dart';
 import 'package:package_visual/openMenu/open_menu_widget.dart';
-import 'package:package_visual/animation/package_frame_view.dart';
 import 'package:package_visual/settings/settings_controller.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
+/// The main app widget
 class MyApp extends StatelessWidget {
+  /// Create a new MyApp instance
   const MyApp({super.key});
 
   // This widget is the root of your application.
@@ -27,7 +28,9 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// The main page of the app
 class MyHomePage extends StatefulWidget {
+  /// Create a new MyHomePage instance
   const MyHomePage({super.key});
 
   @override
