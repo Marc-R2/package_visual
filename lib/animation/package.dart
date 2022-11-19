@@ -61,7 +61,7 @@ class Package {
   bool get isDone => now.isAfter(confirmationTime);
 
   /// Whether the package has timed out (from the senders view).
-  bool get isTimedOut => DateTime.now().isAfter(timeoutTime);
+  bool get isTimedOut => now.isAfter(timeoutTime);
 
   /// Get the current progress of the transmission timeout.
   double get timeOutProgress => now.isAfter(timeoutTime)

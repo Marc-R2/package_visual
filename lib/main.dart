@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:package_visual/animation/package.dart';
 import 'package:package_visual/openMenu/open_menu_item.dart';
 import 'package:package_visual/openMenu/open_menu_widget.dart';
-import 'package:package_visual/package_frame_view.dart';
+import 'package:package_visual/animation/package_frame_view.dart';
 import 'package:package_visual/settings/settings_controller.dart';
 
 void main() {

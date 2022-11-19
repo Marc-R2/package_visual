@@ -77,11 +77,13 @@ class _PackageFrameViewState extends State<PackageFrameView> {
 
     if (finishedSendFrames.isNotEmpty) {
       Settings.currentSendFrame++;
-      Settings.packages.map(Settings.packages.remove);
+      // Settings.packages.map(Settings.packages.remove);
       setState(() {});
     }
 
-    Settings.packages.removeWhere((item) => item.isConfirmed);
+    Settings.packages.removeWhere(
+      (item) => item.isConfirmed && item.index < _currentSendFrame,
+    );
   }
 
   void update([Timer? t]) {
@@ -98,9 +100,13 @@ class _PackageFrameViewState extends State<PackageFrameView> {
         break;
       }
 
-      if (!frames.any((element) => !element.isTimedOut)) {
-        Settings.packages.add(Package.fromSettings(index: index));
-        break;
+      if (frames.any((item) => item.isTimedOut)) {
+        if (!frames.any((item) => !item.isDestroyed && item.isConfirmed)) {
+          if (!frames.any((item) => !item.isTimedOut)) {
+            Settings.packages.add(Package.fromSettings(index: index));
+            break;
+          }
+        }
       }
 
       /*if (DateTime.now().isAfter(frame.receiveTime) && !frame.isDestroyed) {

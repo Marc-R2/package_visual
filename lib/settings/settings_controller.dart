@@ -10,13 +10,13 @@ class Settings {
   static Protocol protocol = Protocol.goBackN;
 
   /// Time in milliseconds to travel from sender to receiver (and bacl).
-  static int transmissionTime = 1024;
+  static int transmissionTime = 4048;
 
   /// The number of packages that are contained in a Frame.
   static int windowSize = 8;
 
   /// Time in milliseconds before a package times out.
-  static int timeout = 5192;
+  static int timeout = 9192;
 
   /// Time in milliseconds between sending packages.
   static int sendInterval = 512;

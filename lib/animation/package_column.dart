@@ -34,11 +34,6 @@ class PackageColumn extends StatelessWidget {
 
   int get _currentReceiveFrame => Settings.currentReceiveFrame;
 
-  bool? _isReceived(DateTime? time) {
-    if (time == null) return null;
-    return DateTime.now().isAfter(time);
-  }
-
   @override
   Widget build(BuildContext context) {
     final isReceived = package.isEmpty
@@ -52,42 +47,44 @@ class PackageColumn extends StatelessWidget {
 
     final column = Padding(
       padding: const EdgeInsets.all(8),
-      child: DecoratedBox(
-        key: ValueKey(index),
-        decoration: BoxDecoration(color: Colors.grey.withOpacity(0.25)),
-        child: Column(
-          children: [
-            // Sending Rectangle on top
-            SizedBox(
-              width: width,
-              height: height,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 512),
-                curve: Curves.easeInOut,
-                decoration: BoxDecoration(
-                  border: Border.all(),
-                  borderRadius: BorderRadius.circular(4),
-                  color: isConfirmed ? Colors.yellow : Colors.blue,
+      child: IgnorePointer(
+        child: DecoratedBox(
+          key: ValueKey(index),
+          decoration: BoxDecoration(color: Colors.grey.withOpacity(0.25)),
+          child: Column(
+            children: [
+              // Sending Rectangle on top
+              SizedBox(
+                width: width,
+                height: height,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 512),
+                  curve: Curves.easeInOut,
+                  decoration: BoxDecoration(
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(4),
+                    color: isConfirmed ? Colors.yellow : Colors.blue,
+                  ),
                 ),
               ),
-            ),
-            // Space between the two Rectangles
-            const Spacer(),
-            // Receiving Rectangle on bottom
-            SizedBox(
-              width: width,
-              height: height,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 256),
-                curve: Curves.easeInOut,
-                decoration: BoxDecoration(
-                  border: Border.all(),
-                  borderRadius: BorderRadius.circular(4),
-                  color: isReceived ? Colors.deepPurple.shade900 : Colors.white,
+              // Space between the two Rectangles
+              const Spacer(),
+              // Receiving Rectangle on bottom
+              SizedBox(
+                width: width,
+                height: height,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 256),
+                  curve: Curves.easeInOut,
+                  decoration: BoxDecoration(
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(4),
+                    color: isReceived ? Colors.deepPurple.shade900 : Colors.white,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

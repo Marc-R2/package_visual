@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:package_visual/animation/package.dart';
 import 'package:package_visual/settings/settings_controller.dart';
 
+/// Animate a Package in a Column
 class AnimatedPackageInColumn extends StatefulWidget {
+  /// Create a new AnimatedPackageInColumn instance
   const AnimatedPackageInColumn({
     super.key,
     required this.package,
@@ -75,15 +77,26 @@ class _AnimatedPackageInColumnState extends State<AnimatedPackageInColumn> {
     return Positioned(
       top: 8 + pos,
       left: 8,
-      child: Container(
-        width: widget.width,
-        height: widget.height,
-        decoration: BoxDecoration(
-          border: Border.all(),
-          borderRadius: BorderRadius.circular(4),
-          color: DateTime.now().isAfter(widget.package.receiveTime)
-              ? Colors.green
-              : Colors.blue,
+      child: InkWell(
+        onTap: () {
+          if (widget.package.isDestroyed) return;
+          print('destroy: $index');
+          Settings.packages.remove(widget.package);
+          Settings.packages.add(widget.package.copyWith(isDestroyed: true));
+        },
+        child: Opacity(
+          opacity: widget.package.isDestroyed ? 0 : 1,
+          child: Container(
+            width: widget.width,
+            height: widget.height,
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(4),
+              color: DateTime.now().isAfter(widget.package.receiveTime)
+                  ? Colors.green
+                  : Colors.blue,
+            ),
+          ),
         ),
       ),
     );
