@@ -37,91 +37,15 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool showSettings = false;
 
-  Timer? updateTimer;
-
   late final ScrollController scrollController;
 
   @override
   void initState() {
-    setTimer();
     scrollController = ScrollController();
     super.initState();
   }
 
-  @override
-  void dispose() {
-    updateTimer?.cancel();
-    super.dispose();
-  }
-
-  void setTimer() {
-    updateTimer?.cancel();
-    updateTimer = Timer.periodic(
-      Duration(milliseconds: Settings.sendInterval),
-      update,
-    );
-  }
-
   void toggleSettings() => setState(() => showSettings = !showSettings);
-
-  int get sendPos => Settings.currentSendFrame;
-
-  void update([Timer? t]) {
-    if (mounted) setState(() {});
-
-    final size = Settings.windowSize;
-
-    for (var i = 0; i < size; i++) {
-      final index = sendPos + i;
-      final frames = Settings.packages.where((item) => item.index == index);
-
-      if (frames.isEmpty) {
-        Settings.packages.add(Package.fromSettings(index: index));
-        break;
-      }
-
-      if (!frames.any((element) => !element.isTimedOut)) {
-        Settings.packages.add(Package.fromSettings(index: index));
-        break;
-      }
-
-      if (i == 0) {
-        if (frames.any((item) => !item.isDestroyed && item.isReceived)) {
-          Settings.currentReceiveFrame = index + 1;
-        }
-        final finished = frames.where(
-          (item) => item.isConfirmed && !item.isDestroyed,
-        );
-        if (finished.isNotEmpty) {
-          Settings.currentSendFrame = index + 1;
-          finished.map(Settings.packages.remove);
-          i = -1;
-          continue;
-        }
-      }
-
-      Settings.packages.removeWhere(
-        (element) => DateTime.now().isAfter(element.confirmationTime),
-      );
-
-      /*if (DateTime.now().isAfter(frame.receiveTime) && !frame.isDestroyed) {
-        Settings.packages.add(frame.copyWith(isReceived: true));
-        Settings.currentReceiveFrame = index + 1;
-      }
-      if (i == 0 && frame.isConfirmed) {
-        i = -1;
-        Settings.currentSendFrame++;
-        Settings.packages.removeAt(index);
-        continue;
-      }
-      if (frame.isTimedOut && !frame.isConfirmed) {
-        Settings.packages[index] = Package.fromSettings(index: index);
-        break;
-      }*/
-    }
-
-    if (mounted) setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -217,10 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
               elevation: 48,
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                child: PackageFrameView(
-                  items: Settings.packages,
-                  scrollController: scrollController,
-                ),
+                child: PackageFrameView(scrollController: scrollController),
               ),
             ),
           ),
