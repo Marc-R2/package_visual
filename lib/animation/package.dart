@@ -6,7 +6,6 @@ class Package {
   /// Create a new Package instance
   const Package({
     required this.index,
-    required this.protocol,
     required this.startTime,
     required this.receiveTime,
     required this.confirmationTime,
@@ -24,7 +23,6 @@ class Package {
     return Package(
       index: index,
       startTime: now,
-      protocol: Settings.protocol,
       receiveTime: now.add(transmissionTime),
       confirmationTime: now.add(transmissionTime * 2),
       timeoutTime: now.add(Duration(milliseconds: Settings.timeout)),
@@ -36,9 +34,6 @@ class Package {
 
   /// The index of the package.
   final int index;
-
-  /// The protocol used to send the package.
-  final Protocol protocol;
 
   /// Time when the package was sent.
   final DateTime startTime;
@@ -101,7 +96,6 @@ class Package {
   }) {
     return Package(
       index: index ?? this.index,
-      protocol: protocol ?? this.protocol,
       startTime: startTime ?? this.startTime,
       receiveTime: receiveTime ?? this.receiveTime,
       confirmationTime: confirmationTime ?? this.confirmationTime,

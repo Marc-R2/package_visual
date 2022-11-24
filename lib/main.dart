@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:package_visual/animation/package_frame_view.dart';
 import 'package:package_visual/openMenu/open_menu_item.dart';
 import 'package:package_visual/openMenu/open_menu_widget.dart';
+import 'package:package_visual/settings/protocol.dart';
 import 'package:package_visual/settings/settings_controller.dart';
 
 void main() {
@@ -97,6 +98,46 @@ class _MyHomePageState extends State<MyHomePage> {
                 editable: const Align(
                   alignment: Alignment.centerLeft,
                   child: Text('Do send packages'),
+                ),
+              ),
+              // Protocol
+              OpenMenuItem(
+                height: 72,
+                leading: const Icon(Icons.swap_vert),
+                editable: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Radio<Protocol>(
+                          value: Protocol.selectiveRepeat,
+                          groupValue: Settings.protocol,
+                          onChanged: (value) {
+                            Settings.protocol = value!;
+                            if (mounted) setState(() {});
+                          },
+                        ),
+                        const Text('Selective Repeat'),
+                      ],
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Radio<Protocol>(
+                          value: Protocol.goBackN,
+                          groupValue: Settings.protocol,
+                          onChanged: (value) {
+                            Settings.protocol = value!;
+                            if (mounted) setState(() {});
+                          },
+                        ),
+                        const Text('Go Back N'),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               // Transmission Time

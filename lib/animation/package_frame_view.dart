@@ -36,6 +36,7 @@ class _PackageFrameViewState extends State<PackageFrameView> {
   double _xScroll = 0;
   double _width = 1;
 
+  static bool _widgetIsVisible = false;
   static Timer? updateTimer;
   Timer? updateTimerPos;
 
@@ -47,6 +48,7 @@ class _PackageFrameViewState extends State<PackageFrameView> {
       const Duration(milliseconds: 64),
       updatePositions,
     );
+    _widgetIsVisible = true;
     super.initState();
   }
 
@@ -63,7 +65,9 @@ class _PackageFrameViewState extends State<PackageFrameView> {
   }
 
   void updatePositions([Timer? t]) {
-    // Move the slider for the received packages
+    // _widgetIsVisible = mounted;
+    if (!mounted) return;
+
     final receiveFrames = Settings.packages
         .where((element) => element.index == _currentReceiveFrame);
     if (receiveFrames.any((item) => item.isReceived && !item.isDestroyed)) {
@@ -90,6 +94,8 @@ class _PackageFrameViewState extends State<PackageFrameView> {
   }
 
   static void update([Timer? t]) {
+    if (!_widgetIsVisible) return;
+
     final size = Settings.windowSize;
     if (!Settings.doSendPackages) return;
 
@@ -102,13 +108,7 @@ class _PackageFrameViewState extends State<PackageFrameView> {
         break;
       }
 
-      // Get the oldest frame
-      final oldestFrame = frames.reduce((value, element) {
-        if (value.receiveTime.isBefore(element.receiveTime)) return value;
-        return element;
-      });
-
-      if (oldestFrame.protocol == Protocol.selectiveRepeat) {
+      if (Settings.protocol == Protocol.selectiveRepeat) {
         if (frames.any((item) => item.isTimedOut)) {
           if (!frames.any((item) => !item.isDestroyed && item.isConfirmed)) {
             if (!frames.any((item) => !item.isTimedOut)) {
@@ -117,29 +117,40 @@ class _PackageFrameViewState extends State<PackageFrameView> {
             }
           }
         }
-      } else if (oldestFrame.protocol == Protocol.goBackN) {
+      } else if (Settings.protocol == Protocol.goBackN) {
         // TODO(any): Implement
+        // Remove all done packages
+        Settings.packages.removeWhere(
+          (item) => item.isDone && item.index <= _currentSendFrame,
+        );
+        if (i == 0 && frames.isEmpty) {
+          Settings.packages.add(Package.fromSettings(index: index));
+          break;
+        }
       }
     }
   }
 
   void autoUpdateScroll() {
-    final newPos = _currentSendFrame * (_width + 16);
-    final scrollPos = widget.scrollController.offset;
+    final double newPos = max(0, (_currentSendFrame - 4) * (_width + 16));
 
-    // if new position is in range of a few _widths, scroll to it
-    if (newPos - scrollPos < _width * 12) {
-      widget.scrollController.animateTo(
-        newPos,
-        duration: const Duration(milliseconds: 256),
-        curve: Curves.easeInOut,
-      );
-    }
-
+    widget.scrollController.animateTo(
+      newPos,
+      duration: const Duration(milliseconds: 256),
+      curve: Curves.easeInOut,
+    );
   }
 
   List<Package> getItems(int index) =>
       Settings.packages.where((item) => item.index == index).toList();
+
+  @override
+  void dispose() {
+    _widgetIsVisible = false;
+    updateTimerPos?.cancel();
+    widget.scrollController.removeListener(updateScroll);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -179,21 +190,19 @@ class _PackageFrameViewState extends State<PackageFrameView> {
                 ),
               ),
             ),
-            ScrollConfiguration(
-              behavior: MyCustomScrollBehavior(),
-              child: ListView.builder(
-                controller: widget.scrollController,
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: max(_currentSendFrame, _currentReceiveFrame) + 48,
-                itemBuilder: (context, index) => PackageColumn(
-                  key: ValueKey('PackageColumn: $index'),
-                  index: index,
-                  height: height,
-                  width: width,
-                  maxHeight: cons.maxHeight,
-                  package: getItems(index),
-                ),
+            ListView.builder(
+              controller: widget.scrollController,
+              scrollDirection: Axis.horizontal,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: max(_currentSendFrame, _currentReceiveFrame) + 48,
+              itemBuilder: (context, index) => PackageColumn(
+                key: ValueKey('PackageColumn: $index'),
+                index: index,
+                height: height,
+                width: width,
+                maxHeight: cons.maxHeight,
+                package: getItems(index),
               ),
             ),
           ],
